@@ -3,6 +3,10 @@
 Below are an example of the metrics as exposed by this exporter. 
 
 ```
+# HELP github_repo_branches Total number of Branches for given repository
+# TYPE github_repo_branches gauge
+github_repo_branches{private="false",repo="docker-hub-exporter",user="atos-tfc"} 1
+github_repo_branches{private="false",repo="prometheus-rancher-exporter",user="atos-tfc"} 4
 # HELP github_repo_open_issues open_issues
 # TYPE github_repo_open_issues gauge
 github_repo_open_issues{repo="docker-hub-exporter",user="infinityworksltd"} 1.0
