@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/fatih/structs"
+	"github.com/github-exporter/exporter"
 	conf "github.com/infinityworks/github-exporter/config"
-	"github.com/infinityworks/github-exporter/exporter"
 	"github.com/infinityworks/go-common/logger"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/sirupsen/logrus"

@@ -2,9 +2,6 @@ package exporter
 
 import (
 	"encoding/json"
-	"fmt"
-	"strconv"
-
 	log "github.com/sirupsen/logrus"
 )
 
@@ -32,65 +29,22 @@ func (e *Exporter) gatherData() ([]*Datum, *RateLimits, error) {
 			json.Unmarshal(response.body, &d)
 			data = append(data, d)
 		}
+	}
 
-		log.Infof("API data fetched for repository: %s", response.url)
+	// Get stats about branches
+	err = getBranchData(e, data)
+	if err != nil {
+		log.Errorf("Unable to obtain branch data from API, Error: %s", err)
 	}
 
 	// Check the API rate data and store as a metric
 	rates, err := getRates(e.APIURL, e.APIToken)
-
 	if err != nil {
 		log.Errorf("Unable to obtain rate limit data from API, Error: %s", err)
 	}
 
 	//return data, rates, err
 	return data, rates, nil
-
-}
-
-// getRates obtains the rate limit data for requests against the github API.
-// Especially useful when operating without oauth and the subsequent lower cap.
-func getRates(baseURL string, token string) (*RateLimits, error) {
-
-	rateEndPoint := ("/rate_limit")
-	url := fmt.Sprintf("%s%s", baseURL, rateEndPoint)
-
-	resp, err := getHTTPResponse(url, token)
-
-	defer resp.Body.Close()
-
-	if err != nil {
-		return &RateLimits{}, err
-	}
-
-	// Triggers if rate-limiting isn't enabled on private Github Enterprise installations
-	if resp.StatusCode == 404 {
-		return &RateLimits{}, fmt.Errorf("Rate Limiting not enabled in GitHub API")
-	}
-
-	limit, err := strconv.ParseFloat(resp.Header.Get("X-RateLimit-Limit"), 64)
-
-	if err != nil {
-		return &RateLimits{}, err
-	}
-
-	rem, err := strconv.ParseFloat(resp.Header.Get("X-RateLimit-Remaining"), 64)
-
-	if err != nil {
-		return &RateLimits{}, err
-	}
-
-	reset, err := strconv.ParseFloat(resp.Header.Get("X-RateLimit-Reset"), 64)
-
-	if err != nil {
-		return &RateLimits{}, err
-	}
-
-	return &RateLimits{
-		Limit:     limit,
-		Remaining: rem,
-		Reset:     reset,
-	}, err
 
 }
 
@@ -108,5 +62,4 @@ func isArray(body []byte) bool {
 	}
 
 	return isArray
-
 }

@@ -30,7 +30,14 @@ type Datum struct {
 	Stars      float64 `json:"stargazers_count"`
 	OpenIssues float64 `json:"open_issues"`
 	Watchers   float64 `json:"subscribers_count"`
+	Branches   float64
 	Size       float64 `json:"size"`
+}
+
+type Branch struct {
+	Name          string `json:"name"`
+	Protected     bool   `json:"protected"`
+	ProtectionUrl string `json:"protection_url"`
 }
 
 // RateLimits is used to store rate limit data into a struct

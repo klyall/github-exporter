@@ -47,8 +47,6 @@ func asyncHTTPGets(targets []string, token string) ([]*Response, error) {
 // getResponse collects an individual http.response and returns a *Response
 func getResponse(url string, token string, ch chan<- *Response) error {
 
-	log.Infof("Fetching %s \n", url)
-
 	resp, err := getHTTPResponse(url, token) // do this earlier
 
 	if err != nil {
@@ -76,6 +74,8 @@ func getResponse(url string, token string, ch chan<- *Response) error {
 
 // getHTTPResponse handles the http client creation, token setting and returns the *http.response
 func getHTTPResponse(url string, token string) (*http.Response, error) {
+
+	log.Infof("Fetching %s", url)
 
 	client := &http.Client{
 		Timeout: time.Second * 10,

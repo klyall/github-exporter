@@ -8,6 +8,11 @@ func AddMetrics() map[string]*prometheus.Desc {
 
 	APIMetrics := make(map[string]*prometheus.Desc)
 
+	APIMetrics["Branches"] = prometheus.NewDesc(
+		prometheus.BuildFQName("github", "repo", "branches"),
+		"Total number of Branches for given repository",
+		[]string{"repo", "user", "private"}, nil,
+	)
 	APIMetrics["Stars"] = prometheus.NewDesc(
 		prometheus.BuildFQName("github", "repo", "stars"),
 		"Total number of Stars for given repository",
@@ -57,12 +62,12 @@ func (e *Exporter) processMetrics(data []*Datum, rates *RateLimits, ch chan<- pr
 
 	// APIMetrics - range through the data slice
 	for _, x := range data {
+		ch <- prometheus.MustNewConstMetric(e.APIMetrics["Branches"], prometheus.GaugeValue, x.Branches, x.Name, x.Owner.Login, strconv.FormatBool(x.Private))
 		ch <- prometheus.MustNewConstMetric(e.APIMetrics["Stars"], prometheus.GaugeValue, x.Stars, x.Name, x.Owner.Login, strconv.FormatBool(x.Private))
 		ch <- prometheus.MustNewConstMetric(e.APIMetrics["Forks"], prometheus.GaugeValue, x.Forks, x.Name, x.Owner.Login, strconv.FormatBool(x.Private))
 		ch <- prometheus.MustNewConstMetric(e.APIMetrics["OpenIssues"], prometheus.GaugeValue, x.OpenIssues, x.Name, x.Owner.Login, strconv.FormatBool(x.Private))
 		ch <- prometheus.MustNewConstMetric(e.APIMetrics["Watchers"], prometheus.GaugeValue, x.Watchers, x.Name, x.Owner.Login, strconv.FormatBool(x.Private))
 		ch <- prometheus.MustNewConstMetric(e.APIMetrics["Size"], prometheus.GaugeValue, x.Size, x.Name, x.Owner.Login, strconv.FormatBool(x.Private))
-
 	}
 
 	// Set Rate limit stats
