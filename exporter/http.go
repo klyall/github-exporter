@@ -50,7 +50,7 @@ func getResponse(url string, token string, ch chan<- *Response) error {
 	resp, err := getHTTPResponse(url, token) // do this earlier
 
 	if err != nil {
-		return fmt.Errorf("Error converting body to byte array: %v", err)
+		return fmt.Errorf("Error calling GitHub: %v", err)
 	}
 
 	// Read the body to a byte array so it can be used elsewhere
